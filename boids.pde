@@ -13,6 +13,16 @@ void setup() {
 
 void draw() {
   background(0);
+    
+  if(mousePressed) {  
+    noStroke();
+    fill(255,20);
+  } else {
+    strokeWeight(1.8);
+    stroke(255,20);
+    noFill();
+  }
+  ellipse(mouseX,mouseY,Boid.MOUSE_R,Boid.MOUSE_R);
   
   for (Boid b : boids) {
     b.update(boids);

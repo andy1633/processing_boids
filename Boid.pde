@@ -1,12 +1,14 @@
 class Boid {
   static final float R = 10.0;
   static final float NEIGHBOURHOOD_R = 42.0;
-  static final float SEPARATE_R = 2.4 * R;
+  static final float SEPARATE_R = 3.0 * R;
+  static final float MOUSE_R = 200.0;
 
   static final float MAX_VELOCITY = 3.0;
   static final float W_ALIGNMENT = 0.4;
   static final float W_COHESION = 0.05;
-  static final float W_SEPARATION = 0.5;
+  static final float W_SEPARATION = 1.0;
+  static final float W_MOUSE = 0.4;
 
   PVector position;
   PVector velocity;
@@ -48,6 +50,7 @@ class Boid {
     PVector cohesion = new PVector();
     PVector separation = new PVector();
     PVector alignment = new PVector();
+    PVector mouse = new PVector();
 
     for (int i = 0; i < neighbours.size (); i++) {
       Boid b = (Boid)neighbours.get(i);
@@ -74,6 +77,14 @@ class Boid {
       averVel.div(neighbours.size());
       alignment = PVector.sub(averVel, velocity);
     }
+    
+    if (mousePressed) {
+      PVector mousePos = new PVector(mouseX, mouseY);
+      PVector delta = PVector.sub(mousePos, position);
+      if (delta.magSq() < sq(MOUSE_R)) {
+        mouse = delta;
+      }
+    }
 
     if (cohesion.magSq() > 0.0)   cohesion.normalize();
     cohesion.mult(W_COHESION);
@@ -81,11 +92,14 @@ class Boid {
     separation.mult(W_SEPARATION);
     if (alignment.magSq() > 0.0)  alignment.normalize();
     alignment.mult(W_ALIGNMENT);
+    if (mouse.magSq() > 0.0)  mouse.normalize();
+    mouse.mult(W_MOUSE);
 
     PVector acceleration = new PVector();
     acceleration.add(cohesion);
     acceleration.add(separation);
     acceleration.add(alignment);
+    acceleration.add(mouse);
 
     velocity.add(acceleration);
 
